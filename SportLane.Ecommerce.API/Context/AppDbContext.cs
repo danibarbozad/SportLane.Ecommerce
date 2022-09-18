@@ -19,10 +19,27 @@ namespace SportLane.Ecommerce.API.Context
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItems> OrderItems { get; set; }
         public DbSet<ProductCategory> ProductsCategories { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Product>().Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Category>().Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Address>().Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Customer>().Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Order>().Property(p => p.Id)
+                .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<ProductCategory>().HasKey(p => new { p.ProductId, p.CategoryId });
+            modelBuilder.Entity<OrderItems>().HasKey(o => new { o.OrderId, o.ProductId });
         }
     }
 }

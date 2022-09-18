@@ -224,6 +224,34 @@ namespace SportLane.Ecommerce.API.Migrations
                     b.ToTable("ProductsCategories");
                 });
 
+            modelBuilder.Entity("SportLane.Ecommerce.API.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("SportLane.Ecommerce.API.Models.Customer", b =>
                 {
                     b.HasOne("SportLane.Ecommerce.API.Models.Address", "Address")
@@ -290,6 +318,15 @@ namespace SportLane.Ecommerce.API.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("SportLane.Ecommerce.API.Models.User", b =>
+                {
+                    b.HasOne("SportLane.Ecommerce.API.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId");
+
+                    b.Navigation("Customer");
                 });
 #pragma warning restore 612, 618
         }
