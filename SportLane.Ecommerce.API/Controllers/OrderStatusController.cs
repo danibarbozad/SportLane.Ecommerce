@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // GET: api/OrderStatus
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<OrderStatus>>> GetOrderStatuses()
         {
             return await _context.OrderStatuses.ToListAsync();
@@ -30,6 +32,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // GET: api/OrderStatus/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<OrderStatus>> GetOrderStatus(int id)
         {
             var orderStatus = await _context.OrderStatuses.FindAsync(id);
@@ -46,6 +49,7 @@ namespace SportLane.Ecommerce.API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutOrderStatus(int id, OrderStatus orderStatus)
         {
             if (id != orderStatus.Id)
@@ -78,6 +82,7 @@ namespace SportLane.Ecommerce.API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<OrderStatus>> PostOrderStatus(OrderStatus orderStatus)
         {
             _context.OrderStatuses.Add(orderStatus);
@@ -88,6 +93,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // DELETE: api/OrderStatus/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<OrderStatus>> DeleteOrderStatus(int id)
         {
             var orderStatus = await _context.OrderStatuses.FindAsync(id);

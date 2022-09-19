@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SportLane.Ecommerce.API.Context;
@@ -22,6 +23,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // GET: api/Products
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
             return await _context.Products.ToListAsync();
@@ -29,6 +31,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // GET: api/Products/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Product>> GetProducts(int id)
         {
             var Product = await _context.Products.FindAsync(id);
@@ -45,6 +48,7 @@ namespace SportLane.Ecommerce.API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutProduct(int id, Product Product)
         {
             if (id != Product.Id)
@@ -77,16 +81,18 @@ namespace SportLane.Ecommerce.API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Product>> PostProduct(Product Product)
         {
             _context.Products.Add(Product);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProduct", new { id = Product.Id }, Product);
+            return CreatedAtAction("PostProduct", new { id = Product.Id }, Product);
         }
 
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<Product>> DeleteProduct(int id)
         {
             var Product = await _context.Products.FindAsync(id);

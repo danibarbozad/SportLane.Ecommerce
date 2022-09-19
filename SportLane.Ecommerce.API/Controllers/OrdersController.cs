@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using SportLane.Ecommerce.API.Context;
 using SportLane.Ecommerce.API.Models;
@@ -23,6 +25,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // GET: api/Orders
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
             return await _context.Orders.ToListAsync();
@@ -30,6 +33,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // GET: api/Orders/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Order>> GetOrder(int id)
         {
             var order = await _context.Orders.FindAsync(id);
@@ -46,6 +50,7 @@ namespace SportLane.Ecommerce.API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutOrder(int id, Order order)
         {
             if (id != order.Id)
@@ -78,6 +83,7 @@ namespace SportLane.Ecommerce.API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Order>> PostOrder(Order order)
         {
             _context.Orders.Add(order);
@@ -88,6 +94,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // DELETE: api/Orders/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<Order>> DeleteOrder(int id)
         {
             var order = await _context.Orders.FindAsync(id);
@@ -102,9 +109,67 @@ namespace SportLane.Ecommerce.API.Controllers
             return order;
         }
 
+        [HttpPost]
+        [Route("AddOrderItem")]
+        [Authorize]
+        public async Task<ActionResult<OrderItems>> AddOrderItem([FromBody] OrderItems orderItem)
+        {
+            _context.OrderItems.Add(orderItem);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("AddOrderItem", orderItem);
+        }
+
+        [HttpPost]
+        [Route("UpdateOrderItem")]
+        [Authorize]
+        public async Task<ActionResult<OrderItems>> UpdateOrderItem([FromBody] OrderItems orderItem)
+        {
+            _context.Entry(orderItem).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!OrderItemExists(orderItem.OrderId, orderItem.ProductId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete]
+        [Route("DeleteOrderItem")]
+        [Authorize]
+        public async Task<ActionResult<OrderItems>> DeleteOrderItem([FromBody] OrderItems orderItem)
+        {
+            if (!OrderItemExists(orderItem.OrderId, orderItem.ProductId))
+            {
+                return NotFound();
+            }
+
+            _context.OrderItems.Remove(orderItem);
+            await _context.SaveChangesAsync();
+
+            return orderItem;
+        }
+
         private bool OrderExists(int id)
         {
             return _context.Orders.Any(e => e.Id == id);
+        }
+
+        private bool OrderItemExists(int orderId, int productId)
+        {
+            return _context.OrderItems.Any(e => e.OrderId == orderId && e.ProductId == productId);
         }
     }
 }

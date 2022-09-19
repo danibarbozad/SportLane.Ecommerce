@@ -9,6 +9,7 @@ using System;
 using System.Threading.Tasks;
 using SportLane.Ecommerce.API.Context;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace SportLane.Ecommerce.API.Controllers
 {
@@ -50,6 +51,15 @@ namespace SportLane.Ecommerce.API.Controllers
                 token = token
             };
         }
+
+        [HttpGet]
+        [Route("GetAll")]
+        [Authorize]
+        public async Task<ActionResult<dynamic>> GetAll()
+        {
+            return await _context.Users.ToListAsync();
+        }
+
 
         [HttpPost]
         [Route("Register")]

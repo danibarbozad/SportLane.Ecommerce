@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // GET: api/Addresses
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Address>>> GetAddresses()
         {
             return await _context.Addresses.ToListAsync();
@@ -30,6 +32,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // GET: api/Addresses/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Address>> GetAddress(int id)
         {
             var address = await _context.Addresses.FindAsync(id);
@@ -46,6 +49,7 @@ namespace SportLane.Ecommerce.API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutAddress(int id, Address address)
         {
             if (id != address.Id)
@@ -78,6 +82,7 @@ namespace SportLane.Ecommerce.API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Address>> PostAddress(Address address)
         {
             _context.Addresses.Add(address);
@@ -88,6 +93,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // DELETE: api/Addresses/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<Address>> DeleteAddress(int id)
         {
             var address = await _context.Addresses.FindAsync(id);

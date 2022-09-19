@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SportLane.Ecommerce.API.Context;
 using SportLane.Ecommerce.API.Models;
+using SportLane.Ecommerce.API.ViewModel;
 
 namespace SportLane.Ecommerce.API.Controllers
 {
@@ -23,6 +25,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // GET: api/Customers
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
             return await _context.Customers.ToListAsync();
@@ -30,6 +33,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Customer>> GetCustomer(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
@@ -46,6 +50,7 @@ namespace SportLane.Ecommerce.API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutCustomer(int id, Customer customer)
         {
             if (id != customer.Id)
@@ -78,6 +83,7 @@ namespace SportLane.Ecommerce.API.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
         {
             _context.Customers.Add(customer);
@@ -88,6 +94,7 @@ namespace SportLane.Ecommerce.API.Controllers
 
         // DELETE: api/Customers/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<Customer>> DeleteCustomer(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
@@ -100,6 +107,24 @@ namespace SportLane.Ecommerce.API.Controllers
             await _context.SaveChangesAsync();
 
             return customer;
+        }
+
+        [HttpPost]
+        [Route("AddCustomerToUser")]
+        [Authorize]
+        public async Task<ActionResult<User>> AddCustomerToUser([FromBody] CustomerUserViewModel customerUser)
+        {
+            var user = _context.Users.Where(w => w.Id == customerUser.UserId).FirstOrDefault();
+
+            if (user == null)
+                return NotFound();
+
+            user.CustomerId = customerUser.CustomerId;
+
+            _context.Entry<User>(user).Property(p => p.CustomerId).IsModified = true;
+            await _context.SaveChangesAsync();
+
+            return user;
         }
 
         private bool CustomerExists(int id)
